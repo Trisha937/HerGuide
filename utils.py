@@ -9,55 +9,60 @@ from datetime import datetime
 @st.cache_resource
 def init_gemini():
     try:
-        # Configure with transport fix
         genai.configure(
             api_key=st.secrets["GEMINI_API_KEY"],
-            transport='rest'  # Forces correct API endpoint
+            transport='rest'  # Ensures the correct endpoint
         )
-        
-        # Use updated model name
+        # Return model object
         return genai.GenerativeModel(
-            'gemini-1.5-pro-latest',  # Updated model name
+            'gemini-1.5-pro-latest',
             generation_config={"temperature": 0.7}
         )
     except Exception as e:
-        st.error(f"Gemini Error: {str(e)}")
+        st.error(f"🔴 Gemini Error: {str(e)}")
         return None
 
-model = genai.GenerativeModel(
-    'gemini-1.5-pro-latest',  # Updated model name
-    generation_config={"temperature": 0.7}
-)
-
 # --- Core Functions ---
+
+import time
+
+# Initialize the Gemini model once for use in ask_gpt
+model = init_gemini()
+
 def ask_gpt(prompt: str, lang: str = "hi") -> str:
-    """Get Hindi response from Gemini with error handling"""
+    """Get Hindi response from Gemini with error handling and token/quota control."""
     if not model:
         return "System error: AI service unavailable"
 
+    # Delay to avoid hitting request-per-minute quota
+    time.sleep(2)  # Wait 2 seconds before making request
+
     try:
         response = model.generate_content(
-            f"हिंदी में 2-3 वाक्यों में सरल उत्तर दें (उपयोगकर्ता ने पूछा: '{prompt}'):",
+            f"संक्षेप में उत्तर दें: '{prompt}'",  # shorter prompt = less tokens
             generation_config={
-                "temperature": 0.7,
-                "max_output_tokens": 150  # Limit response length for audio
+                "temperature": 0.6,
+                "max_output_tokens": 60  # reduced from 150 to save quota
             }
         )
-        return response.text.replace("•", "▶")  # Clean bullet points for TTS
-    
+
+        return response.text.replace(".", "।")  # optional: Hindi sentence end
+
     except Exception as e:
+        if "quota" in str(e).lower():
+            st.toast("🚫 Quota exceeded. Please try again later.", icon="❌")
+            return "कोटा समाप्त हो गया है, कृपया बाद में प्रयास करें।"
         st.toast(f"⚠️ Error: {str(e)}", icon="❌")
-        return "क्षमा करें, इस समय उत्तर देने में असमर्थ हूँ। कृपया बाद में प्रयास करें।"
+        return "क्षम करें, इस समय उत्तर देने में असमर्थ हूँ। कृपया बाद में प्रयास करें।"
+
 
 def transcribe_audio(audio_bytes: bytes) -> str:
     """Convert Hindi audio to text with retry logic"""
     recognizer = sr.Recognizer()
     try:
         with sr.AudioFile(io.BytesIO(audio_bytes)) as source:
-            audio = recognizer.record(source, duration=30)  # Limit to 30s audio
-            
+            audio = recognizer.record(source, duration=30)  # Limit to 30s
         return recognizer.recognize_google(audio, language="hi-IN")
-    
     except sr.UnknownValueError:
         return "आवाज़ समझ नहीं आई। कृपया फिर से प्रयास करें।"
     except Exception as e:
@@ -79,4 +84,4 @@ def speak_text(text: str) -> bytes:
         return fp.read()
     except Exception as e:
         st.error(f"TTS failed: {str(e)}")
-        return b""  # Empty audio
+        return b""  # Return empty audio if failed
