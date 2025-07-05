@@ -1,27 +1,43 @@
 import streamlit as st
+from assistant import SafetySupportAssistant
 
-def main():
-    # Temporary verification (remove after testing)
-    from google.generativeai import get_model
-    st.write("Model status:", get_model('gemini-1.5-pro-latest')) 
-    
-    st.set_page_config(page_title="HerGuide", page_icon=":woman:", layout="centered")
-    if "page" not in st.session_state:
-        st.session_state.page = "welcome"
+# Initialize backend
+assistant = SafetySupportAssistant()
 
-    if st.session_state.page == "welcome":
-        st.title("👋 Welcome to Saheli+SkillHER")
-        st.write("Empowering women with financial knowledge and business opportunities.")
-        if st.button("Enter"):
-            st.session_state.page = "home"
-            st.rerun()
-    elif st.session_state.page == "home":
-        st.title("🏠 Home")
-        st.write("Choose a feature:")
-        st.page_link("pages/QNA.py", label="🎙️ Voice Q&A")
-        # st.page_link("pages/3_Recommendations.py", label="🏦 Scheme Recommendations")
-        # st.page_link("pages/4_SkillHER.py", label="🧵 SkillHER Micro-Business")
-        # st.page_link("pages/5_Safety_Support.py", label="🛡️ Safety & Support")
+# Page setup
+st.set_page_config(page_title="🛡️ Saheli Scam Detector", page_icon="📱")
+st.title("🛡️ Saheli: Scam Detection & Women's Safety Support")
 
-if __name__ == "__main__":
-    main()
+st.markdown("""
+👋 **Welcome!** This tool helps you detect **scammy, phishing, or fake loan** messages.  
+It also connects you with **verified women's helplines and NGOs** across India.  
+
+---
+
+📩 **Paste a suspicious message (SMS, WhatsApp, ad, etc.) below to analyze:**
+""")
+
+# Message input
+message = st.text_area("✍️ Enter message here:", height=150)
+
+# Buttons
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    if st.button("🔍 Analyze"):
+        if message.strip() == "":
+            st.warning("Please paste a message to analyze.")
+        else:
+            result = assistant.analyze_message_for_scam(message)
+            st.subheader("📊 Analysis Result")
+            st.json(result)
+
+with col2:
+    if st.button("📞 Helplines & NGOs"):
+        st.subheader("📍 Verified Women's Helplines")
+        st.json(assistant.get_ngo_helpline_info())
+
+with col3:
+    if st.button("📈 Scam Check Analytics"):
+        st.subheader("📊 Scam Detection Stats")
+        st.json(assistant.get_scam_analytics())
