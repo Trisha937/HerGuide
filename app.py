@@ -20,8 +20,8 @@ def main():
 
     # ✅ Welcome screen
     if st.session_state.page == "welcome":
-        st.title("👋 Welcome to Saheli+SkillHER")
-        st.write("Empowering women with financial knowledge and micro-business opportunities.")
+        st.title("👋 Welcome to HerGuide")
+        st.write("Empowering women with financial knowledge, micro-business opportunities and safety.")
 
         if st.button("Enter"):
             st.session_state.page = "home"
