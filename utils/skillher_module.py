@@ -2,7 +2,7 @@ import streamlit as st
 
 profiles = []
 
-def skillher_interface():
+def skillher_interface(insert_profile):###
     st.subheader("💼 अपना व्यवसाय जोड़ें")
 
     with st.form("skill_form"):
@@ -19,6 +19,7 @@ def skillher_interface():
             "business": business,
             "contact": contact
         })
+        insert_profile(name, location, business, contact) ###
         st.success("प्रोफ़ाइल जोड़ी गई!")
 
     st.subheader("👩‍💼 उपलब्ध प्रोफ़ाइल:")

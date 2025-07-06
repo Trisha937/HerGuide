@@ -1,7 +1,7 @@
 import streamlit as st
 from utils.voice_utils import speak_text
 
-def recommend_interface():
+def recommend_interface(insert_yojana): ##
     st.subheader("📋 अपनी जानकारी भरें और योजनाएँ प्राप्त करें")
 
     with st.form("recommend_form"):
@@ -17,6 +17,6 @@ def recommend_interface():
             recommendation += " आप प्रधानमंत्री जन धन योजना, मुद्रा लोन योजना, और सुकन्या योजना (यदि applicable) के लिए पात्र हो सकते हैं।"
         else:
             recommendation += " आप एलआईसी बीमा और एनपीएस जैसी योजनाओं में निवेश कर सकते हैं।"
-        
+        insert_yojana(name, age, salary, state, recommendation) ##
         st.success(recommendation)
         speak_text(recommendation)

@@ -5,7 +5,7 @@ from transformers import pipeline
 # Load QA model
 qa_model = pipeline("question-answering", model="mrm8488/bert-multi-cased-finetuned-xquadv1")
 
-def qa_interface():
+def qa_interface(insert_question):##
     st.subheader("🧠 वित्तीय प्रश्न पूछें")
 
     if st.button("🎤 आवाज़ से पूछें"):
@@ -20,6 +20,7 @@ def qa_interface():
         
         st.success("उत्तर: " + answer)
         speak_text(answer)
+        insert_question(question, answer)###
 
         st.markdown("👉 [योजनाओं के लिए रजिस्टर करें](https://www.india.gov.in/my-government/schemes)")
 
