@@ -4,14 +4,12 @@ import mysql.connector
 # 🔐 MySQL connection config
 conn = mysql.connector.connect(
     host="localhost",
-    user="herguide_user",
-    password="herguide123",
-    database="herguide",
-    port=3306,
-    ssl_disabled=True
+    user="root",
+    password="Herguide@123",
+    database="herguide"
 )
 cursor = conn.cursor()
-
+ 
 # ─── Create Tables ──────────────────────────────────────────────
 def create_tables():
     # Q&A Table
