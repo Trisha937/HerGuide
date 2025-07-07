@@ -6,29 +6,36 @@ from transformers import pipeline
 from database import insert_question
 import pandas as pd
 
-# Load Hugging Face QA model
+# Load HuggingFace QA model
 qa_model = pipeline("question-answering", model="mrm8488/bert-multi-cased-finetuned-xquadv1")
 
-# Load scheme data
 @st.cache_data
 def load_schemes():
-    df = pd.read_csv("her_schemes.csv", encoding="utf-8", quotechar='"')
-    return df
+    return pd.read_csv("her_schemes.csv", quotechar='"')
 
 schemes_df = load_schemes()
 
-# Match question with any scheme name or desc
+# Match schemes by overlapping keywords in name or description
 def match_scheme_by_keywords(question, schemes_df):
-    question_words = set(question.lower().split())
+    question_words = set(question.strip().lower().split())
+    matches = []
 
     for _, row in schemes_df.iterrows():
-        name = str(row['name']).lower()
-        desc = str(row['desc']).lower()
+        name_words = set(str(row['name']).strip().lower().split())
+        desc_words = set(str(row['desc']).strip().lower().split())
 
-        if any(word in name or word in desc for word in question_words):
-            return row  # first matching row
+        # Intersection score
+        name_score = len(question_words & name_words)
+        desc_score = len(question_words & desc_words)
+        total_score = name_score + desc_score
 
-    return None
+        if total_score > 0:
+            matches.append((total_score, row))
+
+    # Sort by score descending and return top 3
+    sorted_matches = sorted(matches, key=lambda x: x[0], reverse=True)
+    return [match[1] for match in sorted_matches[:3]]
+
 
 def qa_interface():
     st.subheader("🧠 वित्तीय प्रश्न पूछें")
@@ -37,44 +44,36 @@ def qa_interface():
         question = listen_to_voice()
         st.write("आपका सवाल:", question)
 
-        context = "भारत सरकार की वित्तीय योजनाएं जैसे जन धन, उज्ज्वला, सुकन्या, मुद्रा लोन, आदि हैं।"
+        context = "भारत सरकार की वित्तीय योजनाओं में जन धन योजना, मुद्रा योजना, सुकन्या समृद्धि योजना, उज्ज्वला योजना आदि शामिल हैं।"
         response = qa_model(question=question, context=context)
         answer = response['answer']
 
         insert_question(question, answer)
-        matched_row = match_scheme_by_keywords(question, schemes_df)
 
-        if matched_row is not None:
-            scheme_name = matched_row.get("name", "—")
-            scheme_desc = matched_row.get("desc", "—")
-            scheme_link = matched_row.get("link", "")
-            scheme_contact = matched_row.get("mediator_contacts", "")
+        matched_rows = match_scheme_by_keywords(question, schemes_df)
 
-            # Layout in columns
-            col1, col2 = st.columns(2)
+        if matched_rows:
+            all_voice_text = ""
 
-            with col1:
-                st.markdown("#### 🏷 योजना नाम")
-                st.write(scheme_name)
+            for i, row in enumerate(matched_rows, 1):
+                scheme_name = row.get('name', '—')
+                scheme_desc = row.get('desc', '—')
+                scheme_link = row.get('link', '')
+                scheme_contact = row.get('mediator_contacts', '')
 
-                st.markdown("#### 📝 योजना विवरण")
-                st.write(scheme_desc)
+                contact_line = f"\n\n{scheme_contact}" if scheme_contact else ""
 
-            with col2:
-                st.markdown("#### 🔗 आधिकारिक लिंक")
-                if scheme_link:
-                    st.markdown(f"[यहाँ क्लिक करें]({scheme_link})")
-                else:
-                    st.write("—")
+                with st.container():
+                    st.markdown(f"### {i}. 🔹 {scheme_name}")
+                    st.markdown(f"**📝 विवरण:** {scheme_desc}")
+                    st.markdown(f"**🔗 योजना लिंक:** [{scheme_link}]({scheme_link})")
+                    st.markdown(f"**📞 संपर्क करें:** {contact_line}")
+                    st.markdown("---")
 
-                st.markdown("#### 📞 संपर्क जानकारी")
-                if scheme_contact:
-                    st.markdown(scheme_contact, unsafe_allow_html=True)
-                else:
-                    st.write("—")
+                all_voice_text += f"{scheme_name}। {scheme_desc}. "
 
-            speak_text(f"{scheme_name}। {scheme_desc}")
+            speak_text(all_voice_text)
 
         else:
-            st.warning("कोई उपयुक्त योजना नहीं मिली।")
+            st.warning("कोई उपयुक्त योजना नहीं मिली। कृपया पुनः प्रयास करें।")
             speak_text(answer)
