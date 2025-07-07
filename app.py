@@ -26,7 +26,7 @@ tab1, tab2, tab3, tab4 = st.tabs([
 ])
 
 with tab1:
-    qa_interface(insert_question)
+    qa_interface()
 
 with tab2:
     recommend_interface(insert_yojana)
@@ -35,4 +35,4 @@ with tab3:
     skillher_interface(insert_profile)
 
 with tab4:
-    safety_interface(insert_scam)
+    safety_interface()
