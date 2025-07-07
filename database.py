@@ -4,9 +4,11 @@ import mysql.connector
 # 🔐 MySQL connection config
 conn = mysql.connector.connect(
     host="localhost",
-    user="root",
-    password="Herguide@123",
-    database="herguide"
+    user="herguide_user",
+    password="herguide123",
+    database="herguide",
+    port=3306,
+    ssl_disabled=True
 )
 cursor = conn.cursor()
 
