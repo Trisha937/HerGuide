@@ -1,3 +1,5 @@
+#app.py
+
 import streamlit as st
 from utils.qa_module import qa_interface
 from utils.recommendation_module import recommend_interface
@@ -10,7 +12,7 @@ from database import (
     insert_yojana,
     insert_profile,
     insert_scam,
-    insert_feedback  # added for feedback prompt
+    insert_feedback  
 )
 
 # ✅ Initialize tables once when app loads
@@ -37,8 +39,8 @@ with tab2:
 
 # 🔹 SkillHer Tab with profile card + YouTube business idea links
 with tab3:
-    skillher_interface(insert_profile)
+    skillher_interface(insert_profile, insert_feedback)
 
 # 🔹 Safety Support Tab
 with tab4:
-    safety_interface(insert_scam)
+    safety_interface()

@@ -1,9 +1,10 @@
-#utils/safety_module.py
+# utils/safety_module.py
+
 import streamlit as st
 from utils.voice_utils import listen_to_voice, speak_text
-from database import insert_scam
+from database import insert_scam, insert_feedback
 
-SCAM_KEYWORDS = ["जल्दी", "पैसे", "OTP", "बैंक खाता", "लिंक", "धोखाधड़ी","मुनाफा","लाभ"]
+SCAM_KEYWORDS = ["जल्दी", "पैसे", "OTP", "बैंक खाता", "लिंक", "धोखाधड़ी", "मुनाफा", "लाभ"]
 HELPLINES = {
     "महिला हेल्पलाइन": "1091",
     "राष्ट्रीय हेल्पलाइन": "181",
@@ -38,6 +39,13 @@ def safety_interface():
 
         st.warning(warning)
         speak_text(warning)
+
+        # ✅ Feedback Prompt
+        st.markdown("___")
+        feedback = st.radio("क्या यह जानकारी उपयोगी थी?", ("हाँ", "नहीं"), index=None, horizontal=True)
+        if feedback:
+            insert_feedback("safety", message, feedback)
+            st.info("धन्यवाद! आपकी प्रतिक्रिया सुरक्षित कर ली गई है।")
 
     st.subheader("📞 महिला हेल्पलाइन नंबर:")
     for name, number in HELPLINES.items():

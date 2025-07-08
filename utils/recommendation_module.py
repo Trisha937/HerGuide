@@ -1,3 +1,5 @@
+# utils/recommendation_module.py
+
 import streamlit as st
 import json
 import os
@@ -12,6 +14,8 @@ def load_bank_links():
 
 banks_data = load_bank_links()
 
+# utils/recommendation_module.py
+
 def recommend_interface(insert_yojana, insert_feedback):
     st.subheader("📋 अपनी जानकारी भरें और योजनाएँ प्राप्त करें")
 
@@ -24,34 +28,19 @@ def recommend_interface(insert_yojana, insert_feedback):
 
     if submit:
         recommendation = f"{name} जी, आपकी जानकारी के अनुसार, आप {state} राज्य में रहने वाले हैं और आपकी उम्र {age} वर्ष है।"
-        suggested_schemes = []
-        
         if salary < 200000:
-            suggested_schemes = ["प्रधानमंत्री जन धन योजना", "मुद्रा लोन योजना", "सुकन्या समृद्धि योजना"]
             recommendation += " आप प्रधानमंत्री जन धन योजना, मुद्रा लोन योजना, और सुकन्या योजना (यदि applicable) के लिए पात्र हो सकते हैं।"
+            bank_link = "https://www.pmjdy.gov.in"
         else:
-            suggested_schemes = ["एलआईसी बीमा", "एनपीएस"]
             recommendation += " आप एलआईसी बीमा और एनपीएस जैसी योजनाओं में निवेश कर सकते हैं।"
+            bank_link = "https://npscra.nsdl.co.in"
 
         insert_yojana(name, age, salary, state, recommendation)
         st.success(recommendation)
-        speak_text(recommendation)
 
-        for scheme in suggested_schemes:
-            st.markdown(f"---")
-            st.markdown(f"### 📝 {scheme}")
+        st.markdown(f"🔗 [योजना आवेदन वेबसाइट पर जाएं]({bank_link})")
 
-            if scheme in banks_data:
-                st.markdown("#### 🏦 इस योजना के लिए बैंक विकल्प:")
-                for bank in banks_data[scheme]:
-                    st.markdown(f"**{bank['bank']}**")
-                    st.markdown(f"🔗 [Apply Here]({bank['apply_url']})")
-                    st.markdown(f"📞 संपर्क करें: {bank['contact']}")
-                    st.markdown("---")
-            else:
-                st.markdown("बैंक लिंक उपलब्ध नहीं हैं।")
-
-        # Feedback prompt
+        # ✅ Feedback prompt section
         feedback = st.radio("क्या यह सुझाव उपयोगी था?", ("हाँ", "नहीं"), index=None, horizontal=True)
         if feedback:
             insert_feedback("recommendation", recommendation, feedback)
