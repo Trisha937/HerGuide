@@ -9,7 +9,8 @@ from database import (
     insert_question,
     insert_yojana,
     insert_profile,
-    insert_scam
+    insert_scam,
+    insert_feedback  # added for feedback prompt
 )
 
 # ✅ Initialize tables once when app loads
@@ -18,6 +19,7 @@ create_tables()
 st.set_page_config(page_title="HerGuide", layout="wide")
 st.title("🌸 HerGuide - नारी सुरक्षा एवं सशक्तिकरण एप")
 
+# 📌 Tabs for different features
 tab1, tab2, tab3, tab4 = st.tabs([
     "🧠 प्रश्न पूछें",
     "📋 योजना सुझाव",
@@ -25,14 +27,18 @@ tab1, tab2, tab3, tab4 = st.tabs([
     "🛡 सुरक्षा सहायता"
 ])
 
+# 🔹 Q&A Tab with feedback collection
 with tab1:
-    qa_interface()
+    qa_interface(insert_question, insert_feedback)
 
+# 🔹 Recommendations Tab with feedback and bank links
 with tab2:
-    recommend_interface(insert_yojana)
+    recommend_interface(insert_yojana, insert_feedback)
 
+# 🔹 SkillHer Tab with profile card + YouTube business idea links
 with tab3:
     skillher_interface(insert_profile)
 
+# 🔹 Safety Support Tab
 with tab4:
-    safety_interface()
+    safety_interface(insert_scam)
