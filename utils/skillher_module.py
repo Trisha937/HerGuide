@@ -60,9 +60,17 @@ def skillher_interface(insert_profile, insert_feedback):
         else:
             st.info("इस व्यवसाय से संबंधित कोई वीडियो सुझाव उपलब्ध नहीं है।")
 
+
         # ✅ Feedback only after submission
         st.markdown("---")
         feedback = st.radio("क्या यह जानकारी उपयोगी थी?", ("हाँ", "नहीं"), index=None, horizontal=True)
         if feedback:
             insert_feedback("skillher", f"Skill area: {selected_business}", feedback)
             st.info("धन्यवाद! आपकी प्रतिक्रिया सुरक्षित कर ली गई है।")
+
+    if business in video_data:
+        for video in video_data[business][:10]:
+            st.markdown(f"👉 [{video['title']}]({video['url']})")
+    elif business != "अन्य":
+        st.info("इस व्यवसाय से संबंधित कोई वीडियो सुझाव उपलब्ध नहीं है।")
+
