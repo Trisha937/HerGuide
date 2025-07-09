@@ -53,7 +53,7 @@ Database	            SQLite3
 
 -Browse पहले से मौजूद प्रोफाइल (Existing Profiles)
 
-Watch YouTube tutorials from business_yt_links.json
+-Watch YouTube tutorials 
 
 4. घोटाला पहचानें (Safety Module)
 -Select "घोटाला पहचानें"
@@ -78,3 +78,7 @@ Watch YouTube tutorials from business_yt_links.json
 -WhatsApp integration for scam alerts.
 -Multilingual support (Tamil, Bengali).
 -Government scheme API integration.
+
+
+## License
+MIT License - Free for community use
