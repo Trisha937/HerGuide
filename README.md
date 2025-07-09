@@ -26,6 +26,7 @@ NLP	                    HuggingFace Transformers (Hindi QnA)
 Voice Processing	    PyAudio + SpeechRecognition
 Database	            SQLite3
 
+
 ## Usage Guide
 1. वित्तीय प्रश्न पूछें (Ask Financial Questions)
 
@@ -71,6 +72,7 @@ Watch YouTube tutorials from business_yt_links.json
 -Hindi text recognition issues:
 1.Ensure transformers library is updated.
 2.Use clear pronunciation for voice queries.
+
 
 ## Future Roadmap
 -WhatsApp integration for scam alerts.
