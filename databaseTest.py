@@ -1,66 +1,71 @@
-import sqlite3
-from datetime import datetime
 
-# 📦 SQLite Connection Setup
-conn = sqlite3.connect("herguide.db", check_same_thread=False)
+import mysql.connector
+
+# 🔐 MySQL connection config
+conn = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="Herguide@123",
+    database="herguide"
+)
 cursor = conn.cursor()
-
+ 
 # ─── Create Tables ──────────────────────────────────────────────
 def create_tables():
     # Q&A Table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS questions_log (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id INT AUTO_INCREMENT PRIMARY KEY,
             question TEXT,
             answer TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
 
-    # Yojana Recommendations Table
+    # Yojana Recommendations Table (From Form: नाम, उम्र, आय, राज्य)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS yojana_recommendations (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            age INTEGER,
-            salary REAL,
-            state TEXT,
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(100),
+            age INT,
+            salary FLOAT,
+            state VARCHAR(100),
             suggestion TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
 
-    # SkillHer Table
+    # SkillHer Table (From Form: नाम, स्थान, व्यवसाय, संपर्क)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS skillher_profiles (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            location TEXT,
-            business TEXT,
-            contact TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(100),
+            location VARCHAR(100),
+            business VARCHAR(200),
+            contact VARCHAR(100),
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
 
-    # Scam Reports
+    # Scam Reports (From input: message, flagged, reason)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS suraksha_reports (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id INT AUTO_INCREMENT PRIMARY KEY,
             message TEXT,
-            flagged INTEGER,
+            flagged BOOLEAN,
             reason TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
 
-    # Feedback Table
+     # Feedback table creation
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS feedback_log (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            source TEXT,
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            source VARCHAR(50),
             message TEXT,
-            feedback TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            feedback VARCHAR(10),
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
 
@@ -69,36 +74,38 @@ def create_tables():
 # ─── Insert Functions ────────────────────────────────────
 def insert_question(question, answer):
     print("Inserting Question:", question, answer)
-    cursor.execute("INSERT INTO questions_log (question, answer) VALUES (?, ?)", (question, answer))
+    cursor.execute("INSERT INTO questions_log (question, answer) VALUES (%s, %s)", (question, answer))
     conn.commit()
 
 def insert_yojana(name, age, salary, state, suggestion):
     cursor.execute('''
         INSERT INTO yojana_recommendations (name, age, salary, state, suggestion)
-        VALUES (?, ?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s, %s)
     ''', (name, age, salary, state, suggestion))
     conn.commit()
 
 def insert_profile(name, location, business, contact):
     cursor.execute('''
         INSERT INTO skillher_profiles (name, location, business, contact)
-        VALUES (?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s)
     ''', (name, location, business, contact))
     conn.commit()
 
 def insert_scam(message, flagged, reason):
     cursor.execute('''
         INSERT INTO suraksha_reports (message, flagged, reason)
-        VALUES (?, ?, ?)
+        VALUES (%s, %s, %s)
     ''', (message, int(flagged), reason))
     conn.commit()
 
 def insert_feedback(source, message, feedback):
     cursor.execute('''
         INSERT INTO feedback_log (source, message, feedback)
-        VALUES (?, ?, ?)
+        VALUES (%s, %s, %s)
     ''', (source, message, feedback))
     conn.commit()
+
+
 
 # ─── Fetch Functions ─────────────────────────────────────
 def fetch_profiles():
@@ -117,7 +124,7 @@ def fetch_scams():
     cursor.execute("SELECT message, flagged, reason, timestamp FROM suraksha_reports ORDER BY timestamp DESC")
     return cursor.fetchall()
 
-# ─── Main Function for Test Data ─────────────────────────
+
 if __name__ == "__main__":
     create_tables()
     insert_question("मुझे लोन कैसे मिलेगा?", "आप मुद्रा योजना के लिए अप्लाई कर सकती हैं।")
@@ -126,3 +133,5 @@ if __name__ == "__main__":
     insert_scam("जल्दी भुगतान करें वरना अकाउंट बंद हो जाएगा", True, "संभावित स्कैम")
 
     print("Inserted sample data ✅")
+
+    

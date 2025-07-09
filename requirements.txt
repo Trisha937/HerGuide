@@ -5,3 +5,4 @@ speechrecognition
 gtts
 pydub
 pyAudio
+db-sqlite3

@@ -6,7 +6,7 @@ from utils.recommendation_module import recommend_interface
 from utils.skillher_module import skillher_interface
 from utils.safety_module import safety_interface
 
-from database import (
+from databaseTest import (
     create_tables,
     insert_question,
     insert_yojana,

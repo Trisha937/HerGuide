@@ -2,7 +2,7 @@
 
 import streamlit as st
 from utils.voice_utils import listen_to_voice, speak_text
-from database import insert_scam, insert_feedback
+from databaseTest import insert_scam, insert_feedback
 
 SCAM_KEYWORDS = ["जल्दी", "पैसे", "OTP", "बैंक खाता", "लिंक", "धोखाधड़ी", "मुनाफा", "लाभ"]
 HELPLINES = {

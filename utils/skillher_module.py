@@ -4,7 +4,7 @@ import streamlit as st
 import json
 import os
 from utils.voice_utils import speak_text
-from database import fetch_profiles
+from databaseTest import fetch_profiles
 
 # Load YouTube video links from JSON
 def load_video_links():
