@@ -14,7 +14,7 @@ Financial and skill-development assistant for Indian women
 --->pip install -r requirements.txt
 
 2.Run the App
---->streamlit run app.py
+--->python -m streamlit run app.py OR streamlit run app.py
 
 ## Make sure all requirements are installed.
 
@@ -78,6 +78,7 @@ Database	            SQLite3
 -WhatsApp integration for scam alerts.
 -Multilingual support (Tamil, Bengali).
 -Government scheme API integration.
+-UPI payment for micro-business.
 
 
 ## License
