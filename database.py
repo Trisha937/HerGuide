@@ -58,6 +58,17 @@ def create_tables():
         )
     ''')
 
+     # Feedback table creation
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS feedback_log (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            source VARCHAR(50),
+            message TEXT,
+            feedback VARCHAR(10),
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+
     conn.commit()
 
 # ─── Insert Functions ────────────────────────────────────
@@ -87,6 +98,15 @@ def insert_scam(message, flagged, reason):
     ''', (message, int(flagged), reason))
     conn.commit()
 
+def insert_feedback(source, message, feedback):
+    cursor.execute('''
+        INSERT INTO feedback_log (source, message, feedback)
+        VALUES (%s, %s, %s)
+    ''', (source, message, feedback))
+    conn.commit()
+
+
+
 # ─── Fetch Functions ─────────────────────────────────────
 def fetch_profiles():
     cursor.execute("SELECT name, location, business, contact FROM skillher_profiles ORDER BY timestamp DESC")
@@ -113,3 +133,5 @@ if __name__ == "__main__":
     insert_scam("जल्दी भुगतान करें वरना अकाउंट बंद हो जाएगा", True, "संभावित स्कैम")
 
     print("Inserted sample data ✅")
+
+    
