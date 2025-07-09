@@ -4,5 +4,5 @@ torch
 speechrecognition
 gtts
 pydub
-pyAudio
-db-sqlite3
+pyaudio
+# db-sqlite3
